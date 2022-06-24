@@ -29,8 +29,8 @@ html_content = element.get_attribute('outerHTML')
 soup = BeautifulSoup(html_content, 'html.parser')
 cont = soup.select_one("div.entries")
 spans = soup.findAll('span')
-util.insert_auto_retirar(driver,STOP_WIN)
-file = open('salva_win.csv', 'a', newline='')
+# util.insert_auto_retirar(driver,STOP_WIN)
+file = open('salva_win.csv', 'a', newline='\n')
 writer = csv.writer(file)
 init = False
 while True:
@@ -43,7 +43,6 @@ while True:
 
     if len(spans2) != len(spans):
         data_e_hora_atuais = str(datetime.now())
-        print(len(spans2))
 
         valoreSpans = [float(x.text.split('X')[0]) for x in spans2]
         Regra3Loss = list(filter(lambda x: x < 2, valoreSpans[:3]))
@@ -53,7 +52,7 @@ while True:
         regra2WinDaMaior15 = list(filter(lambda x: x > 15, valoreSpans[1:3]))
         crash_point = valoreSpans[:1]
         if(init):
-            print("Crash : {}".format(crash_point))
+            print("Crash : {}".format(crash_point[0]))
             if (crash_point[0] > STOP_WIN):
                 status = "win"
                 balance += round(float((aposta * STOP_WIN)), 2)
@@ -66,13 +65,15 @@ while True:
                 else:
                     amount *= 2
 
-            print(f'Status: {status}: Banca: {balance}')
-            writer.writerow([status,aposta, crash_point[0],data_e_hora_atuais,balance,BET_PERCENTAGE,STOP_WIN,])
+            print(f'Status: {status}: Banca: {round(balance,2)}')
+            writer.writerow([status, aposta, crash_point[0], data_e_hora_atuais.split(' ')[1][:5], balance, BET_PERCENTAGE, STOP_WIN, ])
             if((balance-BancaInicial) > 150):
                 driver.quit()
 
             aposta = 0
             init = False
+        else:
+            writer.writerow(['loss', 0, crash_point[0], data_e_hora_atuais.split(' ')[1][:5], round(balance, 2), BET_PERCENTAGE, STOP_WIN, ])
 
         if(balance > amount):
             
@@ -97,7 +98,7 @@ while True:
                 init = True
                 print(f'Entrar RegraMaior15 {RegraMaior15}  , Aposta de :{aposta}')
             else:
-                print('não entrar')
+                print('NÃO ENTRAR')
         else:
             print('VALOR INSUFICIENTE')
 

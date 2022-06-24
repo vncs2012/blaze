@@ -16,7 +16,6 @@ def login(driver):
     logar.click()
     driver.implicitly_wait(5)
 
-
 def insert_valor(driver, value):
     input_Value = driver.find_element(By.XPATH,"//input[@type='number']")
     input_Value.clear()
@@ -29,7 +28,6 @@ def insert_auto_retirar(driver, value):
     input_Value = driver.find_element(By.XPATH,"//input[@data-testid='auto-cashout']")
     input_Value.clear()
     input_Value.send_keys(str(value))
-
 
 def apostar_retirar(driver,time):
     print('Entrou Apostar|Retirar')

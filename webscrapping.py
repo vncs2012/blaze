@@ -3,8 +3,9 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-import csv
+from selenium.webdriver.common.by import By
 from datetime import datetime
+import csv
 import pandas as pd
 
 url = 'https://blaze.com/pt/games/crash'
@@ -15,17 +16,17 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),optio
 
 driver.get(url)
 
-element = driver.find_element_by_class_name("entries")
+element = driver.find_element(By.CLASS_NAME,"entries")
 html_content = element.get_attribute('outerHTML')
 soup = BeautifulSoup(html_content, 'html.parser')
 cont = soup.select_one("div.entries")
 spans = soup.findAll('span')
 
-file = open('tabela_crash.csv', 'a', newline='')
+file = open('tabela_crash.csv', 'a', newline='\n')
 writer = csv.writer(file)
 
 while True:
-    element = driver.find_element_by_class_name("entries")
+    element = driver.find_element(By.CLASS_NAME,"entries")
     html_content = element.get_attribute('outerHTML')
     soup = BeautifulSoup(html_content, 'html.parser')
     cont = soup.select_one("div.entries")
@@ -36,7 +37,7 @@ while True:
     if len(spans2) != len(spans):
         data_e_hora_atuais = str(datetime.now())
 
-        element = driver.find_element_by_class_name("casino-table-wrapper")
+        element = driver.find_element(By.CLASS_NAME,"casino-table-wrapper")
         html_content = element.get_attribute('outerHTML')
         soup = BeautifulSoup(html_content, 'html.parser')
         table = soup.find(name='table')
@@ -54,11 +55,8 @@ while True:
             if i != '-':
                 valorGanho += float(i[3:])
         
-        writer.writerow([spans2[0].text, 
-                        spans2[0].attrs['class'][0], 
-                        data_e_hora_atuais.split(' ')[1][:5], 
-                        valorApostado,
-                        valorGanho])    
+        writer.writerow([spans2[0].attrs['class'][0],spans2[0].text.split('X')[0],
+                        data_e_hora_atuais.split(' ')[1][:5], valorApostado, round(valorGanho,2)])
         
-        print((valorGanho*10 - valorApostado)/100, spans2[0].text)
+        print((valorGanho*10 - valorApostado)/100, spans2[0].text.split('X')[0])
         spans = spans2
