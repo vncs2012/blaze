@@ -2,6 +2,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras.optimizers import Adam
 
 file = pd.read_csv('tabela_crash.csv', sep = ';')
 
@@ -33,7 +34,7 @@ for a in file['multiplicador']:
         percent.append(100*(total[-1]/total2[-1]))
         print("Percentual: ", 100*(total[-1]/total2[-1]), end="")
         print(" Outros: ", total[-1], total2[-1], num)
-plt.plot(lucro, lista, 'o')
+# plt.plot(lucro, lista, 'o')
 # plt.plot(range(len(total)), total)
 # plt.plot(range(146), [1.3]*146)
 
@@ -57,22 +58,23 @@ for a in range(len(dadosy)):
     else:
         dadosy[a] = 1
 
-
 train_y = dadosy[:num_train]
 
 test_y = dadosy[num_train+1:]
 
 model = keras.Sequential([
-    keras.layers.Dense(3),
-    keras.layers.Dense(7, activation='relu'),
-    keras.layers.Dense(2, activation='softmax')
+    keras.layers.Dense(25, activation='relu'),
+    keras.layers.Dense(1, activation='sigmoid')
 ])
 
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
+model.compile(optimizer=Adam(learning_rate=0.0001),
+              loss='mse',
               metrics=['accuracy'])
 
-model.fit(train_x, train_y, epochs=100)
+result = model.fit(train_x, train_y, 1, epochs=50,shuffle=True,)
+
+result.history.keys()
+plt.plot(result.history['accuracy'])
 
 test_loss, test_acc = model.evaluate(test_x,  test_y, verbose=2)
 

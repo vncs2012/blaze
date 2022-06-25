@@ -11,7 +11,7 @@ import pandas as pd
 url = 'https://blaze.com/pt/games/crash'
 
 option = Options()
-option.headless = True
+option.headless = False
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=option)
 
 driver.get(url)
@@ -23,8 +23,8 @@ cont = soup.select_one("div.entries")
 spans = soup.findAll('span')
 
 file = open('tabela_crash.csv', 'a', newline='\n')
-writer = csv.writer(file)
-
+writer = csv.writer(file,delimiter=';')
+cont = 143
 while True:
     element = driver.find_element(By.CLASS_NAME,"entries")
     html_content = element.get_attribute('outerHTML')
@@ -55,8 +55,17 @@ while True:
             if i != '-':
                 valorGanho += float(i[3:])
         
-        writer.writerow([spans2[0].attrs['class'][0],spans2[0].text.split('X')[0],
-                        data_e_hora_atuais.split(' ')[1][:5], valorApostado, round(valorGanho,2)])
+        cont += 1
+        writer.writerow([
+            spans2[0].attrs['class'][0],
+            data_e_hora_atuais.split(' ')[1][:5],
+            valorApostado,
+            round(valorGanho, 2),
+            cont,
+            spans2[0].text.split('X')[0],
+            
+        ]
+        )
         
         print((valorGanho*10 - valorApostado)/100, spans2[0].text.split('X')[0])
         spans = spans2
