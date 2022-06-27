@@ -63,7 +63,6 @@ while True:
             round(valorGanho, 2),
             cont,
             spans2[0].text.split('X')[0],
-            
         ]
         )
         
